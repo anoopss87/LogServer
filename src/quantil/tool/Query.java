@@ -3,66 +3,66 @@ package quantil.tool;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.text.ParseException;
 import java.util.HashMap;
 
 public class Query
 {
 	public static String path;
 	
-	public static boolean validateInput(String inputLine)
+	public static boolean validateInput(String inputLine) throws NumberFormatException, Exception
 	{
 		String[] params = inputLine.split("\\s+");
-		if(params.length != 7)
+		if(params.length < 7)
 		{
-			System.out.println("Incorrect query format : QUERY IP Core_Num YYYY-MM-DD HH1:MM1 YYYY-MM-DD HH2:MM2");
+			System.out.println("Incorrect query format : Format is QUERY IP Core_Num YYYY-MM-DD HH1:MM1 YYYY-MM-DD HH2:MM2");
 			return false;
 		}
-		if(!params[3].equals(params[5]))
+		else if(!params[3].equals(params[5]))
 		{
-			System.out.println("Incorrect date - YYYY-MM-DD should be same: QUERY IP Core_Num YYYY-MM-DD HH1:MM1 YYYY-MM-DD HH2:MM2");
+			System.out.println("Incorrect date - YYYY-MM-DD should be same: Format is QUERY IP Core_Num YYYY-MM-DD HH1:MM1 YYYY-MM-DD HH2:MM2");
 			return false;
 		}
-		if(Integer.parseInt(params[2]) > Util.NUM_OF_CORES-1 || Integer.parseInt(params[2]) < 0)
+		else if(Integer.parseInt(params[2]) > Util.getNoOfCores()-1 || Integer.parseInt(params[2]) < 0)
 		{
-			System.out.println("Incorrect core number - YYYY-MM-DD should be same: QUERY IP Core_Num YYYY-MM-DD HH1:MM1 YYYY-MM-DD HH2:MM2");
+			System.out.println("Incorrect CPU ID...");
 			return false;
 		}
 		return true;
 	}
 	
 	/* read the binary log file of the queried machine into an in memory data structure*/
-	public static HashMap<String, Integer> readLog(String date, String ipAddress) throws IOException
+	public static HashMap<String, Integer> readLog(String date, String ipAddress) throws Exception
 	{
 		HashMap<String, Integer> ht = new HashMap<String, Integer>();
 		try
 		{
 			RandomAccessFile file = new RandomAccessFile(path + File.separator + Util.generateFName(ipAddress, date), "r");
+			
+			int max_entries = Util.MIN_IN_AN_HOUR * Util.HOURS_IN_A_DAY * Util.getNoOfCores();
 					
-			for(int i=1;i<=Util.NUM_OF_ENTRIES_PER_FILE;++i)
+			for(int i=1;i<=max_entries;++i)
 			{			
 				long uTime = file.readLong();
 				int core = file.read();
 				int usage = file.read();
-				String key = String.valueOf(uTime) + "_" + String.valueOf(core);
+				String key = String.valueOf(uTime) + "_" + String.valueOf(core);				
 				ht.put(key, usage);			
 			}
 			file.close();
 		}
 		catch(FileNotFoundException e)
 		{
-			System.out.println("Invalid time interval/format");
-			System.out.println("Exception thrown  :" + e);
+			System.out.println("Invalid query : Check ip address/time interval");
+			//System.out.println("Exception thrown  :" + e);
 		}
 		return ht;
 		
 	}
 	
 	/* process the query */
-	public static void handleQuery(String ip, String core, String d1, String t1, String d2, String t2) throws ParseException, IOException
+	public static void handleQuery(String ip, String core, String d1, String t1, String d2, String t2) throws Exception
 	{
 		String startDate = d1 + " " + t1;
 		String endDate = d2 + " " + t2;
@@ -80,10 +80,10 @@ public class Query
 			while(startTime < endTime)
 			{
 				System.out.print("(");
-				System.out.println(Util.getFormattedDate(startTime * 1000));
-				System.out.println(", ");
-				System.out.print(ht.get(startTime + "_" + core + "%"));
-				System.out.println(")");
+				System.out.print(Util.getFormattedDate(startTime * 1000));
+				System.out.print(", ");
+				System.out.print(ht.get(startTime + "_" + core) + "%");
+				System.out.print(")");
 				startTime += Util.SEC_IN_A_MIN;
 				if(startTime < endTime)
 					System.out.print(", ");
@@ -92,9 +92,12 @@ public class Query
 		}		
 	}
 	
-	public static void main(String[] args) throws IOException, ParseException
+	public static void main(String[] args) throws NumberFormatException, Exception
 	{
 		/* path where the logs have to be read */
+		if(args.length == 0)
+			System.out.println("No arguments found : command requires data_path as an argument");
+		
 		path = args[0];
 		BufferedReader bufferReader = new BufferedReader(new InputStreamReader(System.in));
 		
@@ -102,17 +105,17 @@ public class Query
 		{
 			System.out.print(">");
 			String inputLine = bufferReader.readLine();
-			String[] params = inputLine.split("\\s+");
-			if(!validateInput(inputLine))
-			{
-				System.out.println("Invalid query : Try again");				
-			}
 			
-			else if (inputLine.trim().toLowerCase().equals("exit"))
+			if (inputLine.trim().toLowerCase().equals("exit"))
 			{
 				System.out.println("Exiting!!!!!");
 				break;
-			}			
+			}
+			String[] params = inputLine.split("\\s+");
+			if(!validateInput(inputLine))
+			{
+				System.out.println("Try again!!!!!!");				
+			}					
 			
 			else if(params[0].trim().toLowerCase().equals("query"))
 			{
@@ -122,7 +125,7 @@ public class Query
 				System.out.format("Elapsed time is %d milli seconds\n", (endTime - startTime));
 			}
 			else
-				System.out.println("Invalid query : Try again");
+				System.out.println("Invalid query : Try again!!!!!!");
 		}
 	}
 }

@@ -2,21 +2,22 @@ package quantil.tool;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Random;
+
 import quantil.tool.Util;
 
 public class Generator
 {
 	/* create IP address for the log files */
 	private static int SUBNET_MAX = 255;
+	private static String DEFAULT_DATE = "2016-01-01";	
 	private static String dir;
 	
 	/* generate contiguous IP addresses which starts with 192.168 */
-	public static void createIPAddrList(int size, ArrayList<String> ipList)
+	private void createIPAddrList(int size, ArrayList<String> ipList)
 	{
 		boolean done = false;
 		for(int i=1;i<=SUBNET_MAX;++i)
@@ -36,7 +37,7 @@ public class Generator
 		}
 	}	
 	
-	public static void generateLog(String date, String ipAddress) throws IOException, ParseException
+	private void generateLog(String date, String ipAddress) throws Exception
 	{		
 		try
 		{
@@ -55,7 +56,7 @@ public class Generator
 			{
 				for(int min=1;min<=Util.MIN_IN_AN_HOUR;++min)
 				{				
-					for(int core=0;core<Util.NUM_OF_CORES;++core)
+					for(int core=0;core<Util.getNoOfCores();++core)
 					{
 						short val = (short) rand.nextInt(100);					
 						file.writeLong(unixTime);					
@@ -78,8 +79,13 @@ public class Generator
 			//System.out.println("Exception thrown  :" + e);
 		}
 	}
-	public static void main(String[] args) throws IOException, ParseException
+	public static void main(String[] args) throws Exception
 	{
+		if(args.length == 0)
+			System.out.println("No arguments found : command requires data_path as an argument and an optional date argument");
+		
+		Generator logGen = new Generator();		
+				
 		long startTime = System.currentTimeMillis();
 		/* data path or log path where the logs will be created*/
 		dir = args[0];
@@ -96,16 +102,21 @@ public class Generator
 		}
 		
 		/* date for which the logs has to be created */
-		String day = args[1];
+		String date = DEFAULT_DATE;
+		if (args.length >= 2)
+		{
+			date = args[1];
+		}
+		
 		ArrayList<String> ipList = new ArrayList<String>();		
 		
-		createIPAddrList(Util.NUM_OF_SERVERS, ipList);
+		logGen.createIPAddrList(Util.getNoOfServers(), ipList);
 		
-		System.out.print("Generating logs");
+		System.out.print("Generating logs...");
 		int counter = 0;
-		for(int i=0;i<Util.NUM_OF_SERVERS;++i)
+		for(int i=0;i<Util.getNoOfServers();++i)
 		{			
-			generateLog(day, ipList.get(i));
+			logGen.generateLog(date, ipList.get(i));
 			counter++;
 			if(counter == 20)
 			{

@@ -7,14 +7,13 @@ import java.util.Date;
 
 public class Util
 {
-	public static int NUM_OF_SERVERS = 1000;
-	public static int SEC_IN_A_MIN = 60;
-	public static int NUM_OF_CORES = 2;
-	public static int HOURS_IN_A_DAY = 24;
-	public static int MIN_IN_AN_HOUR = 60;
-	public static String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm";
-	public static int NUM_OF_ENTRIES_PER_FILE = MIN_IN_AN_HOUR * HOURS_IN_A_DAY * NUM_OF_CORES;
-	
+	private static final int num_of_servers = 10;
+	private static final int num_of_cores = 4;
+	public final static int SEC_IN_A_MIN = 60;	
+	public final static int HOURS_IN_A_DAY = 24;
+	public final static int MIN_IN_AN_HOUR = 60;
+	public final static String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm";		
+				
 	/* generate fileName given IP address and date */
 	public static String generateFName(String ipAddr, String date)
 	{
@@ -26,7 +25,7 @@ public class Util
 	public static String getFormattedDate(long unixTimeMS)
 	{
 		Date date = new Date(unixTimeMS);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_PATTERN);
 		String formattedDate = sdf.format(date);
 		return formattedDate;
 	}
@@ -38,4 +37,22 @@ public class Util
 		Date date = formatter.parse(dateString + " " + time);
 		return date.getTime();
 	}
+	
+	public static int getNoOfServers() throws Exception
+	{
+		String val =  ReadPropFile.getInstance().getNoOfServers();
+		if(val != null)
+			return Integer.parseInt(val);
+		else
+			return num_of_servers;
+	}
+	
+	public static int getNoOfCores() throws Exception
+	{
+		String val =  ReadPropFile.getInstance().getNoOfCores();
+		if(val != null)
+			return Integer.parseInt(val);
+		else
+			return num_of_cores;
+	}	 
 }
