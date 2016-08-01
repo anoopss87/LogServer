@@ -12,14 +12,22 @@ public class ReadPropFile
 	protected ReadPropFile() throws Exception	
 	{
 		prop = new Properties();
+		
 		if(input != null)
-			prop.load(input);
+			prop.load(input);		
 	}
 	
 	public static ReadPropFile getInstance() throws Exception
-	{		
-		if(instance == null)
-			instance = new ReadPropFile();
+	{
+		try
+		{
+			if(instance == null)
+				instance = new ReadPropFile();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Unable to read configuration properties file : e");
+		}
 		return instance;		
 	}
 	

@@ -33,26 +33,47 @@ public class Util
 	/*convert date format yyyy-MM-dd HH:mm into Unix time  */
 	public static long getUnixTimeMS(String dateString, String time) throws ParseException
 	{
-		DateFormat formatter = new SimpleDateFormat(DEFAULT_PATTERN);
-		Date date = formatter.parse(dateString + " " + time);
-		return date.getTime();
+		long uTime = 0;
+		try
+		{
+			DateFormat formatter = new SimpleDateFormat(DEFAULT_PATTERN);
+			Date date = formatter.parse(dateString + " " + time);
+			uTime =  date.getTime();
+		}
+		catch(ParseException e)
+		{
+			System.out.println("Couldn't parse date string : " + e);
+		}
+		return uTime;
 	}
 	
 	public static int getNoOfServers() throws Exception
 	{
-		String val =  ReadPropFile.getInstance().getNoOfServers();
-		if(val != null)
-			return Integer.parseInt(val);
-		else
-			return num_of_servers;
+		try
+		{
+			String val =  ReadPropFile.getInstance().getNoOfServers();
+			if(val != null)
+				return Integer.parseInt(val);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Exception thrown  :" + e);
+		}		
+		return num_of_servers;
 	}
 	
 	public static int getNoOfCores() throws Exception
 	{
-		String val =  ReadPropFile.getInstance().getNoOfCores();
-		if(val != null)
-			return Integer.parseInt(val);
-		else
-			return num_of_cores;
+		try
+		{
+			String val =  ReadPropFile.getInstance().getNoOfCores();
+			if(val != null)
+				return Integer.parseInt(val);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Exception thrown  :" + e);
+		}		
+		return num_of_cores;
 	}	 
 }

@@ -70,13 +70,11 @@ public class Generator
 		}
 		catch(FileNotFoundException e)
 		{
-			System.out.println("Log file couldn't be created");
-			//System.out.println("Exception thrown  :" + e);
+			System.out.println("Log file couldn't be created : " + e);			
 		}
 		catch(ParseException e)
 		{
-			System.out.println("Invalid date format : YYYY-MM-DD");
-			//System.out.println("Exception thrown  :" + e);
+			System.out.println("Invalid date format : YYYY-MM-DD " + e);			
 		}
 	}
 	public static void main(String[] args) throws Exception
@@ -88,45 +86,52 @@ public class Generator
 				
 		long startTime = System.currentTimeMillis();
 		/* data path or log path where the logs will be created*/
-		dir = args[0];
+		dir = args[0];		
 		
-		/* if the directory doesn't exist then create a new directory */
-		File file = new File(dir);
-		if (!file.exists())
+		try
 		{
-			if(!file.mkdir())
+			/* if the directory doesn't exist then create a new directory */
+			File file = new File(dir);
+			if (!file.exists())
 			{
-				System.out.println("Data path directory creation failed.");
-				System.exit(1);
+				if(!file.mkdir())
+				{
+					System.out.println("Data path directory creation failed.");
+					System.exit(1);
+				}
 			}
-		}
 		
-		/* date for which the logs has to be created */
-		String date = DEFAULT_DATE;
-		if (args.length >= 2)
+			/* date for which the logs has to be created */
+			String date = DEFAULT_DATE;
+			if (args.length >= 2)
+			{
+				date = args[1];
+			}
+		
+			ArrayList<String> ipList = new ArrayList<String>();		
+		
+			logGen.createIPAddrList(Util.getNoOfServers(), ipList);
+		
+			System.out.print("Generating logs...");
+			int counter = 0;
+			for(int i=0;i<Util.getNoOfServers();++i)
+			{			
+				logGen.generateLog(date, ipList.get(i));
+				counter++;
+				if(counter == 20)
+				{
+					System.out.print(".");
+					counter = 0;
+				}
+			}
+			System.out.println();
+			long endTime = System.currentTimeMillis();
+			System.out.println("Log generation completed!!!!!!!!");
+			System.out.format("Elapsed time is %d milli seconds\n", (endTime - startTime));
+		}
+		catch(Exception e)
 		{
-			date = args[1];
+			System.out.println("Exception thrown  :" + e);
 		}
-		
-		ArrayList<String> ipList = new ArrayList<String>();		
-		
-		logGen.createIPAddrList(Util.getNoOfServers(), ipList);
-		
-		System.out.print("Generating logs...");
-		int counter = 0;
-		for(int i=0;i<Util.getNoOfServers();++i)
-		{			
-			logGen.generateLog(date, ipList.get(i));
-			counter++;
-			if(counter == 20)
-			{
-				System.out.print(".");
-				counter = 0;
-			}
-		}
-		System.out.println();
-		long endTime = System.currentTimeMillis();
-		System.out.println("Log generation completed!!!!!!!!");
-		System.out.format("Elapsed time is %d milli seconds\n", (endTime - startTime));
 	}
 }
