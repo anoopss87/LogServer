@@ -7,10 +7,25 @@ import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 
+/**
+* The Query returns the various CPU usages of a
+* particular machine which is uniquely identified 
+* by IP address for the specified time interval 
+*
+* @author  Anoop S Somashekar
+* @version 1.0
+* @since   2016-08-01
+*/
 public class Query
 {
 	private static String path;
 	
+	 /**
+	   * This method validates the input for any invalid input format
+	   * @param inputLine Query string entered by the user
+	   * @return boolean It returns true if the input is valid otherwise false	 
+	   * @exception On input error 
+	   */
 	private boolean validateInput(String inputLine) throws NumberFormatException, Exception
 	{
 		String[] params = inputLine.split("\\s+");
@@ -43,7 +58,14 @@ public class Query
 		return true;
 	}
 	
-	/* read the binary log file of the queried machine into an in memory data structure*/
+	/**
+	   * This is the method which reads log files of the specified 
+	   * IP address and date into a hash map where where unixTime 
+	   * and CPU ID is the key and CPU usage is the value.
+	   * @param date Day specified in the query
+	   * @param ipAddress IP address of the machine specified in the query
+	   * @return HashMap<String, Integer> It returns the hash map built by reading log file.	  
+	   */
 	private HashMap<String, Integer> readLog(String date, String ipAddress) throws Exception
 	{
 		HashMap<String, Integer> ht = new HashMap<String, Integer>();
@@ -74,7 +96,16 @@ public class Query
 		
 	}
 	
-	/* process the query */
+	/**
+	   * This is the main method which handles query requests. 
+	   * @param ip IP Address.
+	   * @param core CPU ID
+	   * @param d1 Start date in YYYY-MM-DD
+	   * @param t1 Start time stamp HH:MM
+	   * @param d2 End date in YYYY-MM-DD
+	   * @param t1 End time stamp HH:MM
+	   * @return Nothing.	  
+	   */
 	private void handleQuery(String ip, String core, String d1, String t1, String d2, String t2) throws Exception
 	{
 		String startDate = d1 + " " + t1;
@@ -115,6 +146,11 @@ public class Query
 		}
 	}
 	
+	/**
+	   * This is the main method which makes use of handleQuery method.
+	   * @param args Data path where the logs files are stored.	   
+	   * @exception Exception On input error.	 
+	   */
 	public static void main(String[] args) throws NumberFormatException, Exception
 	{
 		/* path where the logs have to be read */

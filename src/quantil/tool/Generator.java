@@ -9,16 +9,30 @@ import java.util.Random;
 
 import quantil.tool.Util;
 
+/**
+* Generates log files
+* The Generator generates log files for multiple servers
+* with one entry for every minute with the following fields:
+* unixTime,cpuId, cpuUsage. It generates one file per machine
+* for a single day i.e. from 00:00 to 23:59
+* @author  Anoop S Somashekar
+* @version 1.0
+* @since   2016-08-01
+*/
 public class Generator
-{
-	/* create IP address for the log files */
+{	
 	private static int SUBNET_MAX = 255;
 	private static String DEFAULT_DATE = "2016-01-01";	
 	private static String dir;
 	
-	/* generate contiguous IP addresses which starts with 192.168 */
-	private void createIPAddrList(int size, ArrayList<String> ipList)
+	 /**
+	   * This method generates contiguous IP addresses starting from 192.168.1.1 
+	   * @param size Number of IP addresses	  
+	   * @return List of generated IP addresses.	  
+	   */
+	private ArrayList<String> createIPAddrList(int size)
 	{
+		ArrayList<String> ipList = new ArrayList<String>();
 		boolean done = false;
 		for(int i=1;i<=SUBNET_MAX;++i)
 		{
@@ -35,8 +49,16 @@ public class Generator
 			if (done)
 				break;
 		}
+		return ipList;
 	}	
 	
+	/**
+	   * This is the main method which generates log files. It generates
+	   * unique file name and saves the log data in that file.
+	   * @param date Day for which the log has to be generated
+	   * @param ipAddress IP address of the machine for which the log has to be generated
+	   * @return Nothing.	  
+	   */
 	private void generateLog(String date, String ipAddress) throws Exception
 	{		
 		try
@@ -77,6 +99,13 @@ public class Generator
 			System.out.println("Invalid date format : YYYY-MM-DD " + e);			
 		}
 	}
+	
+	/**
+	   * This is the main method which makes use of generateLog method.
+	   * @param args Data path where the log files needs to stored and optional date.
+	   * If date is not specified as an argument then it uses the default date which is "2016-01-01"	   
+	   * @exception Exception On input error.	 
+	   */
 	public static void main(String[] args) throws Exception
 	{
 		if(args.length == 0)
@@ -108,9 +137,7 @@ public class Generator
 				date = args[1];
 			}
 		
-			ArrayList<String> ipList = new ArrayList<String>();		
-		
-			logGen.createIPAddrList(Util.getNoOfServers(), ipList);
+			ArrayList<String> ipList = logGen.createIPAddrList(Util.getNoOfServers());			
 		
 			System.out.print("Generating logs...");
 			int counter = 0;

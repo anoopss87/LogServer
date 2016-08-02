@@ -5,6 +5,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+* Utilities used by Generator and Query
+* 
+* @author  Anoop S Somashekar
+* @version 1.0
+* @since   2016-08-01
+*/
 public class Util
 {
 	private static final int num_of_servers = 10;
@@ -14,14 +21,23 @@ public class Util
 	public final static int MIN_IN_AN_HOUR = 60;
 	public final static String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm";		
 				
-	/* generate fileName given IP address and date */
+	/**
+	   * This method generates file name using IP address and date separated by "_".
+	   * @param ipAddr IP address
+	   * @param date Date for which the logs needs to be generated
+	   * @return generated file name	  
+	   */
 	public static String generateFName(String ipAddr, String date)
 	{
 		String fName = ipAddr.replace('.', '-') + "_" + date;
 		return fName;
 	}
 	
-	/* convert Unix time into date format yyyy-MM-dd HH:mm*/
+	/**
+	   * This method gets the formatted date "yyyy-MM-dd HH:mm".
+	   * @param unixTimeMS Unix time in milliseconds	  
+	   * @return formatted date	  
+	   */
 	public static String getFormattedDate(long unixTimeMS)
 	{
 		Date date = new Date(unixTimeMS);
@@ -30,7 +46,13 @@ public class Util
 		return formattedDate;
 	}
 	
-	/*convert date format yyyy-MM-dd HH:mm into Unix time  */
+	/**
+	   * This method gets Unix time in milliseconds
+	   * @param dateString date in YYYY-MM-DD format
+	   * @param time time in HH:MM format	  
+	   * @exception ParseException on invalid date format error
+	   * @return Unix time	  
+	   */
 	public static long getUnixTimeMS(String dateString, String time) throws ParseException
 	{
 		long uTime = 0;
@@ -47,6 +69,11 @@ public class Util
 		return uTime;
 	}
 	
+	/**
+	   * This method gets number of servers which will be used by Generator and Query	   
+	   * @return number of servers
+	   * @exception	Exception on invalid property file  
+	   */
 	public static int getNoOfServers() throws Exception
 	{
 		try
@@ -62,6 +89,11 @@ public class Util
 		return num_of_servers;
 	}
 	
+	/**
+	   * This method gets number of cores which will be used by Generator and Query	    
+	   * @return number of cores
+	   * @exception	Exception on invalid property file  
+	   */
 	public static int getNoOfCores() throws Exception
 	{
 		try

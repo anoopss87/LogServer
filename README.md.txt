@@ -1,7 +1,7 @@
 # LogServer
 
 1) Generate Logs:
-  java -cp Quantil-0.0.1-SNAPSHOT.jar quantil.tool.Generator data_path YYYY-MM-DD
+  java -cp Quantil-0.0.1-SNAPSHOT.jar quantil.tool.Generator data_path [YYYY-MM-DD]
   
 2) Query
   java -cp Quantil-0.0.1-SNAPSHOT.jar quantil.tool.Query data_path
