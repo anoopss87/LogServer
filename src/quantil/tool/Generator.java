@@ -98,6 +98,10 @@ public class Generator
 		{
 			System.out.println("Invalid date format : YYYY-MM-DD " + e);			
 		}
+		catch(Exception e)
+		{
+			System.out.println("Exception thrown : " + e);
+		}
 	}
 	
 	/**
@@ -109,7 +113,10 @@ public class Generator
 	public static void main(String[] args) throws Exception
 	{
 		if(args.length == 0)
+		{
 			System.out.println("No arguments found : command requires data_path as an argument and an optional date argument");
+			System.exit(0);
+		}
 		
 		Generator logGen = new Generator();		
 				

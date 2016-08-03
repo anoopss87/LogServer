@@ -14,8 +14,8 @@ import java.util.Date;
 */
 public class Util
 {
-	private static final int num_of_servers = 10;
-	private static final int num_of_cores = 4;
+	private static final int num_of_servers = 1000;
+	private static final int num_of_cores = 2;
 	public final static int SEC_IN_A_MIN = 60;	
 	public final static int HOURS_IN_A_DAY = 24;
 	public final static int MIN_IN_AN_HOUR = 60;
@@ -78,9 +78,13 @@ public class Util
 	{
 		try
 		{
-			String val =  ReadPropFile.getInstance().getNoOfServers();
-			if(val != null)
-				return Integer.parseInt(val);
+			ReadPropFile inst;
+			if((inst = ReadPropFile.getInstance()) != null)
+			{
+				String val =  inst.getNoOfServers();
+				if(val != null)
+					return Integer.parseInt(val);
+			}			
 		}
 		catch(Exception e)
 		{
@@ -98,9 +102,13 @@ public class Util
 	{
 		try
 		{
-			String val =  ReadPropFile.getInstance().getNoOfCores();
-			if(val != null)
-				return Integer.parseInt(val);
+			ReadPropFile inst;
+			if((inst = ReadPropFile.getInstance()) != null)
+			{
+				String val = inst.getNoOfCores();
+				if(val != null)
+					return Integer.parseInt(val);
+			}
 		}
 		catch(Exception e)
 		{

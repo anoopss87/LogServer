@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -45,15 +48,31 @@ public class Query
 			{
 				System.out.println("Incorrect CPU ID...");
 				return false;
-			}			
+			}
+			SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			parser.setLenient(false);
+			Date startTime = parser.parse(params[3] + " " + params[4]);
+			Date endTime = parser.parse(params[5] + " " + params[6]);
+			if(endTime.before(startTime))
+			{
+				System.out.println("Invalid time interval : End time is before start time");
+				return false;
+			}
 		}
 		catch(NumberFormatException e)
 		{
 			System.out.println("Cannot convert CPU Id in string to integer : " + e);
+			return false;
+		}		
+		catch(ParseException e)
+		{
+			System.out.println("Invalid time stamp : " + e);
+			return false;
 		}
 		catch(Exception e)
 		{
 			System.out.println("Exception thrown  :" + e);
+			return false;
 		}
 		return true;
 	}
@@ -64,7 +83,8 @@ public class Query
 	   * and CPU ID is the key and CPU usage is the value.
 	   * @param date Day specified in the query
 	   * @param ipAddress IP address of the machine specified in the query
-	   * @return HashMap<String, Integer> It returns the hash map built by reading log file.	  
+	   * @return HashMap<String, Integer> It returns the hash map built by reading log file.
+	   * @exception FileNotFoundException On invalid ip address/time stamp	  
 	   */
 	private HashMap<String, Integer> readLog(String date, String ipAddress) throws Exception
 	{
@@ -92,8 +112,7 @@ public class Query
 		{
 			System.out.println("Invalid query : Check ip address/time interval " + e);			
 		}
-		return ht;
-		
+		return ht;		
 	}
 	
 	/**
@@ -104,7 +123,8 @@ public class Query
 	   * @param t1 Start time stamp HH:MM
 	   * @param d2 End date in YYYY-MM-DD
 	   * @param t1 End time stamp HH:MM
-	   * @return Nothing.	  
+	   * @return Nothing.
+	   * @exception Exception On input error.	  
 	   */
 	private void handleQuery(String ip, String core, String d1, String t1, String d2, String t2) throws Exception
 	{
@@ -155,7 +175,10 @@ public class Query
 	{
 		/* path where the logs have to be read */
 		if(args.length == 0)
+		{
 			System.out.println("No arguments found : command requires data_path as an argument");
+			System.exit(0);
+		}
 		
 		try
 		{
